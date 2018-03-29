@@ -1,10 +1,14 @@
 import pandas
 import json
 
-fight_data = "/Users/Darragh/College/DataVis/mma_visualizationvisualization/ufc_data/ufc-fighters-fight-data-from-fightmetriccom/Fights_Edit.csv"
+fight_data = "/Users/Darragh/College/DataVis/mma_visualization/ufc_data/ufc-fighters-fight-data-from-fightmetriccom/Fights_Edit.csv"
 
 weightclasses = {'Flyweight': 0, 'Bantamweight': 1, 'Featherweight': 2, 'Lightweight': 3, 'Welterweight': 4, 'Middleweight': 5,
                 'Light Heavyweight': 6, 'Heavyweight': 7, 'Women\'s Strawweight': 8, 'Women\'s Bantamweight': 9}
+
+
+# TODO:// Filter out weightclasses such as Ultimate Fighter Australia vs. UK Lightweight Tournament &&
+# Ultimate Fighter 17 Middleweight Tournament also interim title fights
 
 def parse_matchup(match):
     index = match.find('   VS')
@@ -24,8 +28,15 @@ def parse_winner(fighter_1, fighter_2, f1_outcome):
         return (fighter_2, fighter_1)
 
 def parse_weightclass(weightclass):
-    index = weightclass.find(' Bout')
-    parsed_wc =  weightclass[:index]
+    index = weightclass.find(' Title Bout')
+    if index == -1:
+        index = weightclass.find(' Bout')
+        parsed_wc = weightclass[:index]
+    else:
+        parsed_wc = weightclass[:index]
+        parsed_wc = parsed_wc[4:]
+        print(parsed_wc)
+
     if parsed_wc in weightclasses:
         return weightclasses[parsed_wc]
     else:
@@ -57,7 +68,7 @@ if __name__ == '__main__':
     fights['nodes'] = []
     fights['links'] = []
 
-    weightclass_filter = -1
+    weightclass_filter = 0
 
     for index, row in ufc_fight_data.iterrows():
         if str(row.Matchup) != "nan":

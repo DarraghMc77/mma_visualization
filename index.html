@@ -1,9 +1,16 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<p>
+    <label for="nValue"
+           style="display: inline-block; width: 240px; text-align: right">
+        angle = <span id="nValue-value"></span>
+    </label>
+    <input type="color" value="#ff0000" id="nValue">
+</p>
 <style>
 
     .links line {
-        stroke: #999;
+        /*stroke: #999;*/
         stroke-opacity: 0.6;
     }
 
@@ -28,6 +35,14 @@
         .force("charge", d3.forceManyBody())
         .force("center", d3.forceCenter(width / 2, height / 2));
 
+    var body = d3.select('body');
+
+    body.append('input')
+        .attr('type','text')
+        .attr('name','textInput')
+        .attr('value','Text goes here')
+        .attr('id', 'nValue');
+
     d3.json("fights.json", function(error, graph) {
         if (error) throw error;
 
@@ -36,7 +51,11 @@
             .selectAll("line")
             .data(graph.links)
             .enter().append("line")
-            .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
+            .attr("stroke-width", function(d) { return Math.sqrt(d.value); })
+            .attr("stroke", "black");//function(d) { return d.source == "Demetrious Johnson" ? "red" : "#999";});
+
+
+    //.attr("x2", function(d, i) { if (i < data.length - 1 ) { return x(data[i+1]["LONT"]);} else { return x(data[i]["LONT"]);}})
 
         var node = svg.append("g")
             .attr("class", "nodes")
@@ -61,6 +80,7 @@
             .links(graph.links);
 
         function ticked() {
+            console.log("here");
             link
                 .attr("x1", function(d) { return d.source.x; })
                 .attr("y1", function(d) { return d.source.y; })
@@ -71,6 +91,22 @@
                 .attr("cx", function(d) { return d.x; })
                 .attr("cy", function(d) { return d.y; });
         }
+
+        d3.select("#nValue").on("input", function() {
+            console.log("here");
+            update(+this.value);
+        });
+
+        update("blue");
+
+        function update(nValue) {
+
+            console.log(nValue);
+            // adjust the value
+            link.select("line")
+                .attr("stroke", nValue);
+        }
+
     });
 
     function dragstarted(d) {
@@ -89,5 +125,6 @@
         d.fx = null;
         d.fy = null;
     }
+
 
 </script>
